@@ -19,6 +19,5 @@ $string['setupsql'] = 'DB setup SQL';
 $string['db_name'] = 'DB name';
 $string['db_table'] = 'DB table';
 
-
-
-
+$string['external_connection'] = 'External Survey Database Settings';
+$string['db_prefix'] = 'Database prefix';
