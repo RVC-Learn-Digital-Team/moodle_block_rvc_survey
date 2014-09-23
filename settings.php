@@ -47,7 +47,7 @@ $settings->add($dbpass);
 $field			=	new admin_setting_configtext('rvc_survey/table',get_string( 'db_table', 'block_rvc_survey' ), get_string( 'db_table', 'block_rvc_survey' ),'',PARAM_RAW);
 $settings->add($field);
 
-$field			=	new admin_setting_configtext('rvc_survey/surveyid',get_string( 'surveyid', 'block_rvc_survey' ), get_string( 'surveyud', 'block_rvc_survey' ),'',PARAM_RAW);
+$field			=	new admin_setting_configtext('rvc_survey/surveyid',get_string( 'surveyid', 'block_rvc_survey' ), get_string( 'surveyid', 'block_rvc_survey' ),'',PARAM_RAW);
 $settings->add($field);
 
 $field			=	new admin_setting_configtext('rvc_survey/surveytitle',get_string( 'surveytitle', 'block_rvc_survey' ), get_string( 'surveytitle', 'block_rvc_survey' ),'',PARAM_RAW);
