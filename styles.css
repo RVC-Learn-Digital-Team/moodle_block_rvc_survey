@@ -1,0 +1,17 @@
+.titlelink  {
+    text-decoration: underline;
+}
+
+.stusurvey  {
+    margin-top: 10px;
+    border-color: black;
+    border-style: solid;
+    border-width: 1px;
+    padding: 5px;
+}
+
+.surveypara {
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    margin-top: 5px;
+}
