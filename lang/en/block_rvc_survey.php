@@ -21,3 +21,4 @@ $string['db_table'] = 'DB table';
 
 $string['external_connection'] = 'External Survey Database Settings';
 $string['db_prefix'] = 'Database prefix';
+$string['noconnection'] = 'No Connection';
