@@ -49,11 +49,12 @@ class block_rvc_survey extends block_base    {
             $title              =       get_config('rvc_survey','surveytitle');
             $close              =       get_config('rvc_survey','surveyclose');
             $content            =       get_string('introduction', 'block_rvc_survey')." <br />";
-            $content            .=      "<div class='stusurvey'>";
-            foreach($surveys    as      $s)   {
-                $closedate      =   date('d/m/Y',strtotime($s[$close]));
-                $content        .=      "<p class='surveypara'><a href='".$this->rvc_url($s[$surveyid])."' class='titlelink'>".$s[$title]."</a><br />".get_string('closes','block_rvc_survey')." ".$closedate."</p>";
-            }
+            $content            .=      "<div class='stusurvey' id='student_survey_url'>";
+            $content            .=      "<p class='surveypara'>Checking for surveys - please check back soon... </p>";
+            #foreach($surveys    as      $s)   {
+            #    $closedate      =   date('d/m/Y',strtotime($s[$close]));
+            #    $content        .=      "<p class='surveypara'><a href='".$this->rvc_url($s[$surveyid])."' class='titlelink'>".$s[$title]."</a><br />".get_string('closes','block_rvc_survey')." ".$closedate."</p>";
+            #}
             $content            .=       "</div>";
 
         } else {
