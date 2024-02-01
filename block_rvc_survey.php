@@ -21,6 +21,19 @@ class block_rvc_survey extends block_base    {
             return $this->content;
         }
 
+        global $PAGE, $CFG;
+        // Assuming your JavaScript file is named 'ajax_call.js' and located in the block's 'js' directory
+        $jsFilePath = new moodle_url('/blocks/block_rvc_survey/js/ajax_call.js');
+        $PAGE->requires->js($jsFilePath);
+
+        // Pass the AJAX URL to JavaScript
+        $ajaxUrl = new moodle_url('/blocks/block_rvc_survey/external_ajax_request.php');
+        $PAGE->requires->js_init_call('M.block_block_rvc_survey.init', array($ajaxUrl->out(false)), false, array(
+            'name'     => 'block_block_rvc_survey',
+            'fullpath' => '/blocks/block_rvc_survey/module.js',
+            'requires' => array('base', 'io', 'node', 'json')
+        ));
+
         $this->content->text    =   "";
 
         require_once($CFG->dirroot.'/blocks/rvc_survey/classes/external_connection.php');
