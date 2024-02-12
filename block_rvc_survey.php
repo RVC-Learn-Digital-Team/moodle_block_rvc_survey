@@ -22,17 +22,10 @@ class block_rvc_survey extends block_base    {
         }
 
         global $PAGE, $CFG;
-        // Assuming your JavaScript file is named 'ajax_call.js' and located in the block's 'js' directory
-        $jsFilePath = new moodle_url('/blocks/block_rvc_survey/js/ajax_call.js');
-        $PAGE->requires->js($jsFilePath);
-
-        // Pass the AJAX URL to JavaScript
-        $ajaxUrl = new moodle_url('/blocks/block_rvc_survey/external_ajax_request.php');
-        $PAGE->requires->js_init_call('M.block_block_rvc_survey.init', array($ajaxUrl->out(false)), false, array(
-            'name'     => 'block_block_rvc_survey',
-            'fullpath' => '/blocks/block_rvc_survey/module.js',
-            'requires' => array('base', 'io', 'node', 'json')
-        ));
+        
+        $ajaxUrl = new moodle_url('/blocks/rvc_survey/classes/external_ajax_request.php'); 
+        // Use js_call_amd to include and initialize your AMD module with the AJAX URL
+        $PAGE->requires->js_call_amd('block_rvc_survey/init_survey', 'init', array($ajaxUrl->out(false)));
 
         $this->content->text    =   "";
 
@@ -64,10 +57,12 @@ class block_rvc_survey extends block_base    {
             $content            =       get_string('introduction', 'block_rvc_survey')." <br />";
             $content            .=      "<div class='stusurvey' id='student_survey_url'>";
             $content            .=      "<p class='surveypara'>Checking for surveys - please check back soon... </p>";
-            #foreach($surveys    as      $s)   {
-            #    $closedate      =   date('d/m/Y',strtotime($s[$close]));
-            #    $content        .=      "<p class='surveypara'><a href='".$this->rvc_url($s[$surveyid])."' class='titlelink'>".$s[$title]."</a><br />".get_string('closes','block_rvc_survey')." ".$closedate."</p>";
-            #}
+            /* Uncomment this to replace ajax call with database request on page load
+            foreach($surveys    as      $s)   {
+                $closedate      =   date('d/m/Y',strtotime($s[$close]));
+                $content        .=      "<p class='surveypara'><a href='".$this->rvc_url($s[$surveyid])."' class='titlelink'>".$s[$title]."</a><br />".get_string('closes','block_rvc_survey')." ".$closedate."</p>";
+            }
+            */
             $content            .=       "</div>";
 
         } else {
