@@ -21,6 +21,12 @@ class block_rvc_survey extends block_base    {
             return $this->content;
         }
 
+        global $PAGE, $CFG;
+        
+        $ajaxUrl = new moodle_url('/blocks/rvc_survey/classes/external_ajax_request.php'); 
+        // Use js_call_amd to include and initialize your AMD module with the AJAX URL
+        $PAGE->requires->js_call_amd('block_rvc_survey/init_survey', 'init', array($ajaxUrl->out(false)));
+
         $this->content->text    =   "";
 
         require_once($CFG->dirroot.'/blocks/rvc_survey/classes/external_connection.php');
@@ -49,11 +55,14 @@ class block_rvc_survey extends block_base    {
             $title              =       get_config('rvc_survey','surveytitle');
             $close              =       get_config('rvc_survey','surveyclose');
             $content            =       get_string('introduction', 'block_rvc_survey')." <br />";
-            $content            .=      "<div class='stusurvey'>";
+            $content            .=      "<div class='stusurvey' id='student_survey_url'>";
+            $content            .=      "<p class='surveypara'>Checking for surveys - please check back soon... </p>";
+            /* Uncomment this to replace ajax call with database request on page load
             foreach($surveys    as      $s)   {
                 $closedate      =   date('d/m/Y',strtotime($s[$close]));
                 $content        .=      "<p class='surveypara'><a href='".$this->rvc_url($s[$surveyid])."' class='titlelink'>".$s[$title]."</a><br />".get_string('closes','block_rvc_survey')." ".$closedate."</p>";
             }
+            */
             $content            .=       "</div>";
 
         } else {
