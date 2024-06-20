@@ -7,5 +7,5 @@
  * To change this template use File | Settings | File Templates.
  */
 
-$plugin->version = 2014072002;
+$plugin->version = 2023021202;
 $plugin->component = 'block_rvc_survey';
