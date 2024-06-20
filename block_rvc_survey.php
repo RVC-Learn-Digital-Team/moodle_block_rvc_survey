@@ -19,6 +19,8 @@ class block_rvc_survey extends block_base    {
 
         if($this->content !== NULL) {
             return $this->content;
+        } else {
+            $this->content = new stdClass;
         }
 
         global $PAGE, $CFG;
