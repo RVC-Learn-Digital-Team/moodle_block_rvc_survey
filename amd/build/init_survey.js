@@ -1,22 +1,15 @@
-// File: /blocks/rvc_survey/amd/src/init_survey.js
-define(['jquery', 'core/ajax'], function($, Ajax) {
+define([], function() {
     return {
         init: function(ajaxUrl) {
-            $(document).ready(function() {
-                $.ajax({
-                    url: ajaxUrl,
-                    headers: { 'Accept' : 'application/json'},
-                    type: 'GET',
-                    success: function(response) {
-                        if(response && response.survey_links_html) {
-                            $('#student_survey_url').html(response.survey_links_html);
+            document.addEventListener('DOMContentLoaded', function() {
+                fetch(ajaxUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data && data.survey_links_html) {
+                            document.getElementById('student_survey_url').innerHTML = data.survey_links_html;
                         }
-                    },
-                    error: function(xhr, status, error) {
-                      console.error('AJAX Error:', status, error);
-                      console.log('Response:', xhr.responseText);
-                  }
-                });
+                    })
+                    .catch(error => console.error("Failed to fetch survey links", error));
             });
         }
     };

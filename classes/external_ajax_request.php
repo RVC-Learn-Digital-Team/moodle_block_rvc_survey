@@ -32,6 +32,12 @@ $dbparams['type']     =   get_config('rvc_survey','dbconnectiontype');
 
 $extcon  =   new     external_connection($dbparams);
 
+if (!$extcon || !empty($extcon->errorlist)) {
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode(['survey_links_html' => get_string("nodata",'block_rvc_survey')]);
+    exit;
+}
+
 $tablename          =       get_config('rvc_survey','table');
 
 $surveyuser         =       get_config('rvc_survey','surveyuser');
