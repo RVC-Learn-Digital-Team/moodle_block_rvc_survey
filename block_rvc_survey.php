@@ -52,6 +52,6 @@ class block_rvc_survey extends block_base    {
 
     function rvc_url($surveyid) {
         //Update Link to oss RH
-        return  "https://oss.rvc.ac.uk/Default.aspx?SurveyID={$surveyid}&redirect=L";
+        return  "https://oss.rvc.ac.uk/Default.aspx?SurveyID=$surveyid&redirect=L";
     }
 }

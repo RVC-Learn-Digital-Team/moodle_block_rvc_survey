@@ -147,7 +147,7 @@ class external_connection   {
     	$and	=	'';
     	if (!empty($paramarray) && is_array($paramarray)) 
     	foreach ($paramarray as $k => $v) {
-    		$str	=	"{$str} {$and} ";
+    		$str	=	"$str $and ";
     		//$str	.=	(is_array($v)) ?	$k." ".$this->arraytostring($v) :	" $k $v";
 			//remove all ~ from fieldname - this is so that when a field is used twice in a query, 
 			//you can use the ~ to make a unique array key, but still generate sql with the simple fieldname
@@ -182,15 +182,15 @@ class external_connection   {
     	$fields 	=	(is_array($fields))		?	implode(', ',$fields)	:	$fields;		
     	   	
     	//create the select statement
-    	$select		=	"SELECT		{$fields} ";
+    	$select		=	"SELECT		$fields ";
     	
     	//create the from 
-    	$from		=	"FROM		{$table} ";
+    	$from		=	"FROM		$table ";
     	
     	//get the 
     	$wheresql		=	$this->arraytostring($whereparams);
     	
-    	$where			=	(!empty($wheresql)) ? "WHERE {$wheresql} "	: 	"";
+    	$where			=	(!empty($wheresql)) ? "WHERE $wheresql "	: 	"";
     	
     	$sort		=	'';
     	if (isset($addionalargs['sort']))	$sort		=	(!empty($addionalargs['sort']))	? "ORDER BY {$addionalargs['sort']} "	: "";
@@ -255,7 +255,7 @@ class external_connection   {
         if ($args) {
             $args = ',' . $args;
         }
-		$sql	=	"EXECUTE {$procedurename}{$args}";
+		$sql	=	"EXECUTE $procedurename $args";
 		
 		$result		= (!empty($this->db)) ? $this->execute($sql) : false;
 		return		(!empty($result->fields))	?	$result->getRows() :	false;
