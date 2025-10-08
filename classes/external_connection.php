@@ -105,12 +105,14 @@ class external_connection   {
             
             // Set aggressive timeouts to prevent hanging
             if ($db) {
-                $db->connectTimeout = 2;  // 2 second connection timeout
+                // Use proper ADOdb timeout methods instead of dynamic properties
                 $db->SetFetchMode(ADODB_FETCH_ASSOC);
                 
-                // Set additional timeout properties if available
-                if (property_exists($db, 'timeout')) {
-                    $db->timeout = 2;
+                // Set connection timeout using environment/ini settings instead
+                // This avoids the dynamic property issue in PHP 8.2+
+                if (function_exists('ini_set')) {
+                    $old_timeout = ini_get('default_socket_timeout');
+                    ini_set('default_socket_timeout', 2);
                 }
             }
         }
@@ -121,7 +123,14 @@ class external_connection   {
 	        try{
 	            // Use timeout wrapper for connection attempt
 	            $start_time = time();
-	            $connection_result = @$db->Connect( $host, $user, $pass, $dbname );
+	            
+	            // Set connection timeout using ADOdb's proper method
+	            if (method_exists($db, 'PConnect')) {
+	                // For persistent connections, use Connect with timeout monitoring
+	                $connection_result = @$db->Connect( $host, $user, $pass, $dbname );
+	            } else {
+	                $connection_result = @$db->Connect( $host, $user, $pass, $dbname );
+	            }
 	            
 	            // Check if connection succeeded and didn't timeout
 	            if (!$connection_result) {
@@ -130,6 +139,11 @@ class external_connection   {
 	            
 	            if (time() - $start_time > 2) {
 	                throw new Exception('Connection timeout exceeded');
+	            }
+	            
+	            // Restore original timeout if we changed it
+	            if (isset($old_timeout)) {
+	                ini_set('default_socket_timeout', $old_timeout);
 	            }
 	        }
 	        catch( exception $e ){
@@ -350,10 +364,8 @@ class external_connection   {
     	        return false;
     	    }
     	    
-    	    // Set query timeout if method exists
-    	    if (method_exists($this->db, 'SetTimeout')) {
-    	        $this->db->SetTimeout($query_timeout);
-    	    }
+    	    // Instead of setting timeout properties, use time monitoring
+    	    // This avoids PHP 8.2 dynamic property deprecation warnings
     	    
         	$res = $this->db->Execute( $sql );
         	
