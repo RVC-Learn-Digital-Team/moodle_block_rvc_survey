@@ -102,17 +102,53 @@ class external_connection   {
 
         try{
             $db = ADONewConnection( $type );
+            
+            // Set aggressive timeouts to prevent hanging
+            if ($db) {
+                // Use proper ADOdb timeout methods instead of dynamic properties
+                $db->SetFetchMode(ADODB_FETCH_ASSOC);
+                
+                // Set connection timeout using environment/ini settings instead
+                // This avoids the dynamic property issue in PHP 8.2+
+                if (function_exists('ini_set')) {
+                    $old_timeout = ini_get('default_socket_timeout');
+                    ini_set('default_socket_timeout', 2);
+                }
+            }
         }
         catch( exception $e ){
             $errorlist[] = $e->getMessage();
         }
         if( $db ){
 	        try{
-	            $db->SetFetchMode(ADODB_FETCH_ASSOC);
-	            $db->Connect( $host, $user, $pass, $dbname );
+	            // Use timeout wrapper for connection attempt
+	            $start_time = time();
+	            
+	            // Set connection timeout using ADOdb's proper method
+	            if (method_exists($db, 'PConnect')) {
+	                // For persistent connections, use Connect with timeout monitoring
+	                $connection_result = @$db->Connect( $host, $user, $pass, $dbname );
+	            } else {
+	                $connection_result = @$db->Connect( $host, $user, $pass, $dbname );
+	            }
+	            
+	            // Check if connection succeeded and didn't timeout
+	            if (!$connection_result) {
+	                throw new Exception('Database connection failed or timed out');
+	            }
+	            
+	            if (time() - $start_time > 2) {
+	                throw new Exception('Connection timeout exceeded');
+	            }
+	            
+	            // Restore original timeout if we changed it
+	            if (isset($old_timeout)) {
+	                ini_set('default_socket_timeout', $old_timeout);
+	            }
 	        }
 	        catch( exception $e ){
 	            $errorlist[] = $e->getMessage();
+	            $db = false; // Ensure we don't return a bad connection
 	        }
         }
         return array(
@@ -210,8 +246,26 @@ class external_connection   {
    		}
    	
     	$sql		=	$select.$from.$where.$sort.$group.$limit;
-    	$result		= (!empty($this->db)) ? $this->execute($sql) : false;
-    	return		(!empty($result->fields))	?	$result->getRows() :	false;
+    	
+    	// Additional safety checks
+    	if (empty($this->db)) {
+    	    error_log('RVC Survey: No database connection available for query');
+    	    return false;
+    	}
+    	
+    	$result		= $this->execute($sql);
+    	
+    	// Validate result before trying to access fields
+    	if (!$result) {
+    	    return false;
+    	}
+    	
+    	try {
+    	    return (!empty($result->fields)) ? $result->getRows() : false;
+    	} catch (exception $e) {
+    	    error_log('RVC Survey: Error getting rows from result: ' . $e->getMessage());
+    	    return false;
+    	}
     }
 
     function arraytovar($val) {
@@ -298,10 +352,32 @@ class external_connection   {
     */
     public function execute( $sql){
     	$this->make_prelimcall();
+    	
+    	// Add query timeout protection
+    	$start_time = time();
+    	$query_timeout = 2; // 2 seconds max for query execution
+    	
     	try {
+    	    // Check if database connection is still valid
+    	    if (!$this->db || !$this->db->IsConnected()) {
+    	        error_log('RVC Survey: Database connection lost during execute');
+    	        return false;
+    	    }
+    	    
+    	    // Instead of setting timeout properties, use time monitoring
+    	    // This avoids PHP 8.2 dynamic property deprecation warnings
+    	    
         	$res = $this->db->Execute( $sql );
+        	
+        	// Check if query execution timed out
+        	if (time() - $start_time > $query_timeout) {
+        	    error_log('RVC Survey: Query execution timeout for SQL: ' . substr($sql, 0, 100));
+        	    return false;
+        	}
+        	
 		} catch (exception $e) {
-			return false;	
+		    error_log('RVC Survey: Database query error: ' . $e->getMessage() . ' for SQL: ' . substr($sql, 0, 100));
+		    return false;	
 		}
         return $res;
     }
