@@ -8,5 +8,5 @@
  */
 
 
-$plugin->version = 2025052801;
+$plugin->version = 2025100801;
 $plugin->component = 'block_rvc_survey';
