@@ -22,3 +22,6 @@ $string['db_table'] = 'DB table';
 $string['external_connection'] = 'External Survey Database Settings';
 $string['db_prefix'] = 'Database prefix';
 $string['noconnection'] = 'No Connection';
+
+$string['rvc_survey:addinstance'] = 'Add a new RVC Student Surveys block';
+$string['rvc_survey:myaddinstance'] = 'Add a new RVC Student Surveys block to the Dashboard';
